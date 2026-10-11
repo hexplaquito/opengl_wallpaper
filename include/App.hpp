@@ -5,6 +5,9 @@
 #include <GLFW/glfw3.h>
 
 #include "Shader.hpp"
+#include "ShaderManager.hpp"
+
+#include <chrono>
 
 class App
 {
@@ -22,8 +25,7 @@ class App
     unsigned int VBO;
     unsigned int VAO;
     unsigned int EBO;
-
-    Shader* m_shader;
+    ShaderManager* m_shaderManager;
 };
 
 #endif //OPENGLTEST_APP_HPP

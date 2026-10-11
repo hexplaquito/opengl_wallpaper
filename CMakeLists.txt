@@ -32,6 +32,8 @@ add_executable(opengltest
         src/App.cpp
         src/Mesh.cpp
         src/Shader.cpp
+        src/Utils.cpp
+        src/ShaderManager.cpp
 )
 
 target_link_libraries(opengltest

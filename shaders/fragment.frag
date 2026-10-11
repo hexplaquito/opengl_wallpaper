@@ -379,7 +379,9 @@ vec3 sky_gradient(vec2 uv)
 
 void main()
 {
-    vec2 uv = pos.xy;
+    vec2 uv = gl_FragCoord.xy / iResolution.xy;
+    uv -= 0.5;
+    uv.x *= iResolution.x / iResolution.y;
 
     vec3 col = sky_gradient(uv);
     col += milky_way(uv);
@@ -391,7 +393,7 @@ void main()
     col += flashy_stars(uv);
     col += shooting_stars(uv);
 
-//    col = add_trees(col, uv);
+    col = add_trees(col, uv);
 
     col = col * 1.1 / (1.0 + 0.25 * col);
     col *= 1.0 - 0.15 * dot(uv, uv);

@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <stdexcept>
+#include <thread>
 
 #include "Utils.hpp"
 
@@ -21,12 +22,17 @@ void App::Init() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
-  m_window = glfwCreateWindow(800, 600, "", NULL, NULL);
+  GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+  const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+  m_window = glfwCreateWindow( mode->width, mode->height, "", NULL, NULL);
+
   if (m_window == NULL)
   {
     glfwTerminate();
   }
+  glfwSetWindowPos(m_window, 0, 0);
   glfwMakeContextCurrent(m_window);
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -34,45 +40,37 @@ void App::Init() {
     printf("Failed to initialize GLAD");
   }
 
+  m_shaderManager = new ShaderManager();
+
+  glViewport(0, 0, mode->width, mode->height);
+
   glGenBuffers(1, &VBO);
-
-  m_shader = new Shader("../shaders/vertex.vert", "../shaders/fragment.frag");
-  glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
-  glfwSetWindowUserPointer(m_window, m_shader);
-
-  GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-  const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-
-  glfwSetWindowAttrib(m_window, GLFW_DECORATED, GLFW_FALSE);
-
-  glfwSetWindowPos(m_window, 0, 0);
-  glfwSetWindowSize(m_window, mode->width, mode->height);
-
+  glGenBuffers(1, &EBO);
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  glGenBuffers(1, &EBO);
-
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
+
+  if (SetWindowAsWallpaper(m_window)) {
+    printf("SetWindowAsWallpaper success");
+  }
 }
 
 void App::Run() {
-  m_shader->use();
-  m_shader->setVec2("iResolution", 1200, 800);
+
   while(!glfwWindowShouldClose(m_window))
   {
     Update();
     Draw();
   }
-
-  delete m_shader;
+  delete m_shaderManager;
 
   glfwTerminate();
 }
@@ -80,12 +78,30 @@ void App::Run() {
 void App::Update() {
   glfwPollEvents();
 
-  m_shader->setFloat("iTime", glfwGetTime());
+  m_shaderManager->GetCurrent()->setFloat("iTime", glfwGetTime());
+
+  if (GetRightArrowPressed()) {
+    m_shaderManager->UseNext();
+  }
+
+  if (GetLeftArrowPressed()) {
+    m_shaderManager->UsePrevious();
+  }
+
+  if (GetRPressed()) {
+    m_shaderManager->Reload();
+  }
+
+  // pause while not visible -> dependent on os
+  while (IsWindowFullyCovered(m_window)) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    glfwPollEvents();
+  }
+
 }
 
 void App::Draw() {
 
-  glClearColor(0.6f, 0.3f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
