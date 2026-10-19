@@ -1,6 +1,9 @@
 #include "Shader.hpp"
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath)
+Shader::Shader(const char* vertexPath, const char* fragmentPath,
+  Channel ic0, Channel ic1, Channel ic2,
+  std::string bA, std::string bB, std::string bC):
+iChannel0(ic0), iChannel1(ic1), iChannel2(ic2), bufferA(bA), bufferB(bB), bufferC(bC)
 {
   // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;

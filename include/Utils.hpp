@@ -17,11 +17,15 @@ inline void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 // diferent impl with different os
+
+// TODO IsWindowFullyCovered does not work when attached as a wallpaper
 bool IsWindowFullyCovered(GLFWwindow* window);
+
 bool SetWindowAsWallpaper(GLFWwindow* window);
 
 bool GetRightArrowPressed();
 bool GetLeftArrowPressed();
 bool GetRPressed();
+bool GetSPressed();
 
 #endif //OPENGLTEST_UTILS_HPP

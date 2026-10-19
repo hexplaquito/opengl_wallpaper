@@ -1,5 +1,6 @@
 #version 330 core
-out vec4 FragColor;
+layout(location=0) out vec4 FragColor;
+layout(location=1) out vec4 BrightColor;
 
 in vec3 pos;
 
@@ -399,5 +400,11 @@ void main()
     col *= 1.0 - 0.15 * dot(uv, uv);
     col += (hash12(pos.xy) - 0.5)/ 255.0;
 
-    FragColor = vec4(col, 1.0f);
+    float brightness = dot(col.xyz, vec3(0.2126, 0.7152, 0.0722));
+    if(brightness > 1.0)
+        BrightColor = vec4(col, 1.0);
+    else
+        BrightColor = vec4(0.0);
+
+    FragColor = vec4(vec3(1.0) -col, 1.0);
 }

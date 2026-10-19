@@ -1,0 +1,12 @@
+name="nightcity"
+
+vertex="../shaders/src/vertex.vert"
+fragment="../shaders/src/nightcity.frag"
+
+iChannel0=0
+iChannel1=0
+iChannel2=0
+
+bufferA=""
+bufferB=""
+bufferC=""

@@ -26,6 +26,9 @@ class App
     unsigned int VAO;
     unsigned int EBO;
     ShaderManager* m_shaderManager;
+    bool m_isRunning;
+    unsigned int hdrFBO;
+  unsigned int colorBuffers[2];
 };
 
 #endif //OPENGLTEST_APP_HPP

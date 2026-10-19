@@ -8,12 +8,20 @@
 #include <sstream>
 #include <iostream>
 
+enum Channel {
+    none = 0,
+    texture = 1,
+    bufferA = 2,
+    bufferB = 3,
+    bufferC = 5,
+};
+
 class Shader
 {
 public:
     unsigned int ID;
 
-    Shader(const char* vertexPath, const char* fragmentPath);
+    Shader(const char* vertexPath, const char* fragmentPath, Channel ic0, Channel ic1, Channel ic2, std::string bA, std::string bB, std::string bC);
     // activate the shader
     // ------------------------------------------------------------------------
     void use();
@@ -42,6 +50,14 @@ private:
     // utility function for checking shader compilation/linking errors.
     // ------------------------------------------------------------------------
     void checkCompileErrors(unsigned int shader, std::string type);
+
+    Channel iChannel0;
+    Channel iChannel1;
+    Channel iChannel2;
+
+    std::string bufferA;
+    std::string bufferB;
+    std::string bufferC;
 };
 
 #endif //OPENGLTEST_SHADER_HPP

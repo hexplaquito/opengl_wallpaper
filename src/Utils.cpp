@@ -171,6 +171,20 @@ bool GetRPressed() {
   return false;
 }
 
+bool GetSPressed() {
+  static bool wasPressed = false;
+  bool isPressed = (GetAsyncKeyState('S') & 0x8000) != 0;
+
+  if (isPressed && !wasPressed)
+  {
+    wasPressed = isPressed;
+    return true;
+  }
+
+  wasPressed = isPressed;
+  return false;
+}
+
 #endif
 
 #if defined(__linux__)

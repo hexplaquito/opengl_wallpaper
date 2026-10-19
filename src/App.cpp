@@ -58,14 +58,38 @@ void App::Init() {
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
 
-  if (SetWindowAsWallpaper(m_window)) {
-    printf("SetWindowAsWallpaper success");
+    // if (SetWindowAsWallpaper(m_window)) {
+    //   printf("SetWindowAsWallpaper success");
+    // }
+
+  m_isRunning = true;
+
+  glGenFramebuffers(1, &hdrFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+
+  glGenTextures(2, colorBuffers);
+
+  for (unsigned int i = 0; i < 2; i++)
+  {
+    glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RGBA16F, mode->width, mode->height, 0, GL_RGBA, GL_FLOAT, NULL
+    );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // attach texture to framebuffer
+    glFramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0
+    );
   }
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void App::Run() {
 
-  while(!glfwWindowShouldClose(m_window))
+  while(!glfwWindowShouldClose(m_window) && m_isRunning)
   {
     Update();
     Draw();
@@ -80,7 +104,7 @@ void App::Update() {
 
   m_shaderManager->GetCurrent()->setFloat("iTime", glfwGetTime());
 
-  if (GetRightArrowPressed()) {
+  if (GetRightArrowPressed() ) {
     m_shaderManager->UseNext();
   }
 
@@ -90,6 +114,10 @@ void App::Update() {
 
   if (GetRPressed()) {
     m_shaderManager->Reload();
+  }
+
+  if (GetSPressed()) {
+    m_isRunning = false;
   }
 
   // pause while not visible -> dependent on os
@@ -102,10 +130,15 @@ void App::Update() {
 
 void App::Draw() {
 
-  glClear(GL_COLOR_BUFFER_BIT);
+  // glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+  // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
 
   glfwSwapBuffers(m_window);
 

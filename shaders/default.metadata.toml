@@ -1,0 +1,12 @@
+name="default"
+
+vertex="../shaders/src/vertex.vert"
+fragment="../shaders/src/fragment.frag"
+
+iChannel0=0
+iChannel1=0
+iChannel2=0
+
+bufferA=""
+bufferB=""
+bufferC=""

@@ -3,6 +3,8 @@
 
 #include "Shader.hpp"
 #include <vector>
+#include <unordered_map>
+#include <string>
 
 // load all shader in shaders file
 // lets swap between shader with arrows
@@ -19,14 +21,18 @@ class ShaderManager {
     void UsePrevious();
     void Reload(); // reload only fragment.frag
     Shader* GetCurrent();
+    Shader* GetBlurShader();
+
+    void LoadShader(std::string file);
 
   private:
 
     void UseShader(Shader* shader);
 
-    std::vector<Shader*> m_shaders;
-    Shader* m_current;
-    int m_currentShader;
+    int m_currentShaderIndex;
+
+    std::unordered_map<std::string, Shader*> m_shaderMap;
+    std::vector<Shader*> m_shaderVec;
 };
 
 #endif //OPENGLTEST_SHADERMANAGER_HPP
